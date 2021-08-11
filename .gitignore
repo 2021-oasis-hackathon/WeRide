@@ -1,0 +1,13 @@
+### object detection testing files ###
+yolov5/data/
+yolov5/runs/
+
+### weight file ###
+yolov5/*.pt
+
+### temp ###
+results.txt
+
+### 수정중 ###
+yolov5/detect.py
+yolov5/classes.txt
