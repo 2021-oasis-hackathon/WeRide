@@ -13,6 +13,18 @@ from utils.general import check_img_size, check_requirements, check_imshow, non_
 from utils.plots import colors, plot_one_box_PIL, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
 
+def user_feedback(x, im, color=(128, 128, 128), label=None, line_thickness=3):
+    # Plots one bounding box on image 'im' using OpenCV
+    assert im.data.contiguous, 'Image not contiguous. Apply np.ascontiguousarray(im) to plot_on_box() input image.'
+    tl = line_thickness or round(0.002 * (im.shape[0] + im.shape[1]) / 2) + 1  # line/font thickness
+    c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
+    # cv2.rectangle(im, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
+    if label:
+        tf = max(tl - 1, 1)  # font thickness
+        t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+        c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+        cv2.rectangle(im, c1, c2, color, -1, cv2.LINE_AA)  # filled
+        cv2.putText(im, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
 
 def detect(opt):
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
@@ -111,14 +123,17 @@ def detect(opt):
                         label = None if opt.hide_labels else (names[c] if opt.hide_conf else f'{names[c]} {conf:.2f}')
                         # plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
                         ####수정
+                        feedback_xyxy=[0,50,1000,10]
                         if label == 'manholecover' or label == 'pothole' or label == 'roadcrack':
-                            plot_one_box(xyxy, im0, label='WARNING', color=(0,0,255), line_thickness=opt.line_thickness)
+                            plot_one_box(xyxy, im0, label=label, color=(0,0,255), line_thickness=opt.line_thickness)
+                            user_feedback(feedback_xyxy, im0, label='Watch out for obstacle!', color=(0,0,255), line_thickness=5)
                         elif label.split('_')[0] == 'Vehicle' :
                             if int(xyxy[2])-int(xyxy[0]) > int(im0.shape[1]/2) or int(xyxy[3])-int(xyxy[1]) > int(im0.shape[0]/2):
                                 plot_one_box(xyxy, im0, label='Warning', color=(0,0,255), line_thickness=opt.line_thickness)
                             else:
                                 plot_one_box(xyxy, im0, label=label, color=(128,128,128), line_thickness=opt.line_thickness)
                         elif label.split('_')[0] == 'TrafficLight' :
+                            # if label == 'TrafficLight_Red':
                             plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
                         elif label.split('_')[0] == 'Pedestrian' :
                             plot_one_box(xyxy, im0, label=label, color=(0,0,200), line_thickness=opt.line_thickness)
@@ -167,7 +182,7 @@ def detect(opt):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='best(epoch 16 final).pt', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='data/testing/', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--source', type=str, default='data/video/', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--img-size', type=int, default=1280, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='object confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')
