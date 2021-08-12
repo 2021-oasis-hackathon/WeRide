@@ -14,7 +14,7 @@ from utils.plots import colors, plot_one_box_PIL, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
 
 def user_feedback(x, im, color=(128, 128, 128), label=None, line_thickness=3):
-    # Plots one bounding box on image 'im' using OpenCV
+    # 사용자 피드백
     assert im.data.contiguous, 'Image not contiguous. Apply np.ascontiguousarray(im) to plot_on_box() input image.'
     tl = line_thickness or round(0.002 * (im.shape[0] + im.shape[1]) / 2) + 1  # line/font thickness
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
@@ -124,24 +124,24 @@ def detect(opt):
                         # plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
                         ####수정
                         feedback_xyxy=[0,50,1000,10]
-                        if label == 'manholecover' or label == 'pothole' or label == 'roadcrack':
+                        if label == 'manholecover' or label == 'pothole' or label == 'roadcrack': # 단순 사용자 피드백
                             plot_one_box(xyxy, im0, label=label, color=(0,0,255), line_thickness=opt.line_thickness)
                             user_feedback(feedback_xyxy, im0, label='Watch out for obstacle!', color=(0,0,255), line_thickness=5)
-                        elif label.split('_')[0] == 'Vehicle' :
+                        elif label.split('_')[0] == 'Vehicle' : #거리 추가/ 거리 및 상대 속도에 따른 충돌 위험 피드백
                             if int(xyxy[2])-int(xyxy[0]) > int(im0.shape[1]/2) or int(xyxy[3])-int(xyxy[1]) > int(im0.shape[0]/2):
                                 plot_one_box(xyxy, im0, label='Warning', color=(0,0,255), line_thickness=opt.line_thickness)
                             else:
                                 plot_one_box(xyxy, im0, label=label, color=(128,128,128), line_thickness=opt.line_thickness)
-                        elif label.split('_')[0] == 'TrafficLight' :
+                        elif label.split('_')[0] == 'TrafficLight' : #거리 추가/ 거리에 따른 정차 유무 판단 후 피드백
                             # if label == 'TrafficLight_Red':
                             plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
-                        elif label.split('_')[0] == 'Pedestrian' :
+                        elif label.split('_')[0] == 'Pedestrian' : #거리 추가/ 거리에 따른 피드백
                             plot_one_box(xyxy, im0, label=label, color=(0,0,200), line_thickness=opt.line_thickness)
-                        elif label == 'RoadMark_StopLine' or label == 'RoadMark_Crosswalk':
+                        elif label == 'RoadMark_StopLine' or label == 'RoadMark_Crosswalk': # 거리 추가/ 빨간불일때,상대속도로 급정차 유무 판단 및 정지선 지킴 유무 판단 
                             plot_one_box(xyxy, im0, label=label, color=(0,0,150), line_thickness=opt.line_thickness)
-                        else:
+                        else: #traffic sign 피드백, RoadMark 피드백 / 현재 사용 x
                             plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
-                        ####
+                        #### 차선 이탈유무 판단 추가
                         if opt.save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
 
