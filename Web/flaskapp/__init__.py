@@ -34,7 +34,7 @@ def upload_file():
         return 'upload 성공'
 
 
-@app.route('/main1')
+@app.route('/')
 def main1():
     return render_template("mainpage.html")
 
@@ -142,9 +142,7 @@ def res1():
 #def helloworld2():
 #    return "Hello Flask World!" + getattr(g, 'str', '111')
 
-@app.route("/")
-def helloworld():
-    return "HEllo Flask World!!!!!!!!!!"
+
 
 
 
