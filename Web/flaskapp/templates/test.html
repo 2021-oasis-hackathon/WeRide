@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Comatible" content="ie=edge">
+    <title>Jinja Test Page</title>
+</head>
+<body>
+    <div>Jinja Test : {{title}} - {{mu}} </div>
+    <hr>
+    <ul>
+        {% for rank, title, name, hide, ref in lst2 recursive %}
+        <li>
+            {{title}}: {{name}}
+            <ul class="sub">{{ loop(ref) }}</ul>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+    <ul>
+        {% for rank, title, name, hide, ref in lst2 recursive %}
+        <li>
+            {{title}}: {{name}}
+            <ul class="sub">
+                {% for rank, title, name, hide, ref in ref %}
+                    <li>{{title}}: {{name}}</li>
+                {% endfor%}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+    <hr>
+
+    <hr>
+    <ul>
+        {% for item in lst %}
+            <li class="{{loop.cycle('aaa', 'bbb')}}">{{item[0]}}: {{item[1]}}</li>
+        {% endfor %}
+
+        {% for title, name in lst %}
+            <li>{{title}}: {{name}} - {{loop.revindex}}</li>
+        {% endfor %}
+
+    </ul>
+    </hr>
+    
+    {{ "abc {ef} ghi"}}
+
+    <pre>
+    {% raw %}
+	    {% if True  %}
+        TTT
+    	{% endif %}
+    {% endraw %}
+
+    ttt 한글
+    {%- if True  -%}
+    TTT
+    {%- endif -%}qqq
+    </pre>
+</body> 
+</html>
