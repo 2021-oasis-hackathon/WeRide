@@ -28,18 +28,19 @@
     }
 
 
-html :not(.name,h1,.footer){
+html :not(.name,h1,.footer,.middlebox,.backgroundbox,.button){
     font-family : 'Pretendard-Regular';
     font-size : 14px;
 }
 
 /*body의 가로 스크롤 없애주고, 자간 줄임*/
 body {
-
+    /* background-image: url('backgb.png'); */
+    background-size: 100%;
    overflow-x: hidden;
    color: rgb(29,29,31);
    letter-spacing: -0.05em;
-   background:rgb(248,248,248);
+
 }
 p :not(.sub-message){
     line-height: 1.6;
@@ -114,47 +115,91 @@ a{
     line-height: 2.0;
 }
 
-h1 {
-    font-family: 'Pretendard-ExtraBold';
-    margin: 0 208px 50px 441px;
-    margin-top: 100px;
-    font-size: 30px;
-    color: #505050;
-    font-weight: bold;
-    text-align: center;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    text-align: center;
-
-}
-
 .container1 {
-    display: flex;
-    flex-direction: column;
-
+    box-shadow: 0.1px 0.1px 5px rgb(126, 126, 126);
+    position:absolute; top: 40px; left:0; z-index:10;
+    margin-top: 55px;
+    margin-left:27%;
+    width: 800px;
+    height: 600px;
+    padding : 15px;
+    background-color: white;
+    border-radius: 15px;
+    border:solid 1px #cfcfcf;
 }
 
+.container1 h2 {
 
-.box {
-    display: grid;
-
-    background-color: rgb(244, 244, 244);
-    border-radius: 20px;
-    border: solid 1px #d3d3d3;
-    width:833px;
-    height:447px;
-    padding: 55px 329px 137px;
-    overflow:hidden;
-    margin:0 auto;
-
-  
+    color: #565557;
+    margin-top: -12px;
+    margin-left: 15px;
+    margin-top: 30px;
+    text-align: left;
+    font-size: 25px;
+    font-family: 'Pretendard-ExtraBold';
+ 
 }
+
+#middlebox {
+    
+    margin: auto;
+    margin-top: 40px;
+    width : 700px;
+    height: 350px;
+    background-color: white;
+    border-radius: 5px;
+    border:dashed 5px #cdaaff; 
+}
+
+/* 가운데 cloud 아이콘 */
 
 .image {
-    padding : 100px 36%;
-    width:150px;
-    height:150px;
-    object-fit:cover;
+    width: 100px;
+    height: 100px;
+    margin-left: 43%;
+    margin-top : 100px;
 }
+
+#drag {
+    font-family: 'Pretendard-ExtraBold';
+    font-size: 20px;
+    text-align: center;
+    margin-top: 0px;
+    color: rgb(0, 0, 0);
+    
+}
+
+#wating {
+    margin-top: 55px;
+    margin-left: 35px;
+    font-family: 'Pretendard-SemiBold';
+    font-size : 15px
+}
+.bb {
+    display: flex;
+}
+
+/* 오른쪽 하단 업로드 button */
+.button p {
+    font-family: 'Pretendard-ExtraBold';
+    margin-top: 45px;
+    margin-left: 125px;
+    width: 170px;
+    height: 40px;
+    background-color: #af78fc;
+    border-radius: 20px;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    padding : 7px;
+}
+
+.backgroundbox {
+    position:relative;
+    width: 2000px;
+    height: 300px;
+    margin: 0px 3px 457px 0;
+    background-color: #a208fc;}
+
+
+

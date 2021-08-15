@@ -5,44 +5,59 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/css/default.css">
-    <link rel="stylesheet" href="static/css/uploading.css">
+    <link rel="stylesheet" href="static/css/upload.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>DRIVER</title>
     
 </head>
   <body>
       
-
-
-
     <div class="container">
         <nav class="global-nav">
           <div class="global-nav-links">
             <a href="/" class="name">DRIVER</a>
             <a href="/" class="global-nav-item">HOME</a>
             <a href="#" class="global-nav-item">SERVICE</a>
-            <a href="/uploading" class="global-nav-item">UPLOADING</a>
+            <a href="/upload" class="global-nav-item">UPLOADING</a>
             <a href="/mypage" class="global-nav-item">MY PAGE</a>
             <a href="/login" class="LOGIN">SING IN / LOGIN</a>
           </div>
         </nav>
-        
+        <div class="backgroundbox"></div>
         <div class="container1">
+          <div id="box">
+            <h2>Upload Video</video></h2>
+            <div id = "middlebox">
+                <img class = "image" src = "static/images/cloudui.png">          
+                <p id = "drag">파일을 업로드 해주세요</p>
 
-            <h1>[ 당신의 주행영상을 업로드 하세요 ]</h1>
-                  
-            <div class="box">
-              
-                <img class = "image" src = "static/images/uploaing.png">    
                 
+                <center> 
+
+                <br> 
+                <br> 
+                <br>
                 <form action="http://localhost:5000/fileUpload" 
                   method="POST"
                   enctype="multipart/form-data">
-                  <input type="file" name="file" />
-                  
-                  <input type="submit" />
-                  </form>
+                  <input type="file" name="file"/> 
+                
+                  </center>
+                
+                
             </div>
         </div>
+        <div class = bb>
+        <p id="wating">안녕하세요 저희는 오아시스 해커톤 운전만해 입니다. 조금만 기다려주세요</p>
+        <div class = "button">
+          <p>
+            <a href="/score" class="global-nav-item"><input type="submit" class="button" value="업로드" /></a>
+          </form>
+          
+            </p>
+        </div>
+        </div>
+      </div>
 
 
 </body>

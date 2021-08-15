@@ -28,7 +28,7 @@
     }
 
 
-html :not(.name,.scroll-section){
+html :not(.name,.scroll-section,.footer){
     font-family : 'Pretendard-Regular';
     font-size : 14px;
 }
@@ -36,10 +36,10 @@ html :not(.name,.scroll-section){
 /*body의 가로 스크롤 없애주고, 자간 줄임*/
 body {
 
-    overflow-x: hidden;
-    color: rgb(29,29,31);
-    letter-spacing: -0.05em;
-    background:rgb(248,248,248);
+   overflow-x: hidden;
+   color: rgb(29,29,31);
+   letter-spacing: -0.05em;
+   background:rgb(248,248,248);
 }
 p :not(.sub-message){
     line-height: 1.6;
@@ -88,55 +88,3 @@ a{
     margin-left: 600px;
     font-weight: bold;
 }
-
-.scroll-section {
-    padding-top: 20vh;
-}
-
-#scroll-section-0 h1 {
-    line-height: 170%;
-    font-family:'Pretendard-ExtraBold';
-    font-size: 3rem;
-    text-align: left;
-    color:rgb(80,0,99);
-    margin-left : 302px
-}
-
-#scroll-section-0 h2 {
-    font-family: 'Pretendard-SemiBold';
-    color: rgb(184, 184, 184);
-    line-height: 10%;
-    margin-left: 302px;
-    margin-bottom: 40px;
-    font-size: 25px;
-    display: flex;
-    align-items: center;   
-    line-height: 2.0;
-}
-
-.mainroad2{
-
-    margin-left: 300px;
-    width : 1200px;
-    height : 300px;
-}
-
-.mockup{
-    margin-left: 900px;
-    width : 600px;
-    height : 400px;
-}
-/* 이미지와 텍스트가 나란히 나올 때 float:left이용하면 된다. */
-.family{
-    float:left;
-    vertical-align:middle;
-    margin-left: 300px;
-    width : 600px;
-    height : 400px;
-}
-
-#p1{
-    font-family:'Pretendard-ExtraBold';
-    font-size : 50px;
-}
-
