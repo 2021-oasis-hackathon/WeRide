@@ -80,11 +80,11 @@ class Car:
         if (self.has_position) and (not traffic_light):
             pos = np.array((bbox[0]/2+bbox[2]/2, bbox[3])).reshape(1, 1, -1)
             dst = cv2.perspectiveTransform(pos, self.transform_matrix).reshape(-1, 1)
-            return np.array((self.warped_size[1]-dst[1])/self.pix_per_meter[1]+4)
+            return np.array(((self.warped_size[1]-dst[1])/self.pix_per_meter[1]+3)*1.3)
         elif (self.has_position) and traffic_light:
             pos = np.array((bbox[0]/2+bbox[2]/2, bbox[3])).reshape(1, 1, -1)
             dst = cv2.perspectiveTransform(pos, self.transform_matrix).reshape(-1, 1)
-            return np.array(((self.warped_size[1]-dst[1])/self.pix_per_meter[1])+8)
+            return np.array((self.warped_size[1]-dst[1])/(self.pix_per_meter[1]*10))
         else:
             return np.array([0])
 
@@ -92,7 +92,7 @@ class Car:
         if self.display:
             window = self.filtered_bbox.output().astype(np.int32)
             # cv2.rectangle(img, (window[0], window[1]), (window[2], window[3]), color, thickness)
-            if self.has_position and self.position.output()[0] < 4.3:
+            if self.has_position and self.position.output()[0] :
                 cv2.putText(img, "RPos: {:6.2f}m".format(self.position.output()[0]), (int(window[0]), int(window[3]+20)),
                             cv2.FONT_HERSHEY_PLAIN, fontScale=1.25, thickness=3, color=(255, 255, 255))
                 cv2.putText(img, "RPos: {:6.2f}m".format(self.position.output()[0]), (int(window[0]), int(window[3]+20)),
@@ -102,7 +102,7 @@ class Car:
     def draw_speed(self, img, color=(255, 0, 0), thickness=2, frame_history= 0 ):
         if self.display:
             window = self.filtered_bbox.output().astype(np.int32)
-            if self.has_position and self.position.output()[0] < 4.3:
+            if self.has_position and self.position.output()[0] :
                 cv2.putText(img, "RVel: {:6.2f}km/h".format((self.position.output()[0]-frame_history)*self.fps*3.2), (int(window[0]), int(window[3]+35)),
                             cv2.FONT_HERSHEY_PLAIN, fontScale=1.25, thickness=3, color=(255, 255, 255))
                 cv2.putText(img, "RVel: {:6.2f}km/h".format((self.position.output()[0]-frame_history)*self.fps*3.2), (int(window[0]), int(window[3]+35)),
@@ -129,9 +129,14 @@ def detect(opt):
         perspective_data = pickle.load(f)
 
     transform_matrix = perspective_data["perspective_transform"]
+    transfrom_matrix_reverse = transform_matrix[::-1]
     pixels_per_meter = perspective_data['pixels_per_meter']
     orig_points = perspective_data["orig_points"]
-    warped_size = (640, 1280)
+    print(transform_matrix)
+    print(transfrom_matrix_reverse)
+    print(pixels_per_meter)
+    warped_size = (364, 640)
+    warped_size_light = (364, 640)
     ################
 
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
@@ -256,18 +261,21 @@ def detect(opt):
                         elif label.split('_')[0] == 'TrafficLight' : #거리 추가/ 거리에 따른 정차 유무 판단 후 피드백
                             # if label == 'TrafficLight_Red':
                             bbox = np.array((int(xyxy[0]),int(xyxy[1]),int(xyxy[2]),int(xyxy[3])))
-                            car2 = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter, traffic_light= True) #신호등 거리 계산
+                            car2 = Car(bbox, True, warped_size_light, transfrom_matrix_reverse, pixels_per_meter, traffic_light= True) #신호등 거리 계산
                             car2.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=traffic_light_history)
                             traffic_light_history=car2.draw(im0, color=(0, 0, 255), thickness=2)
                             plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
                             
                         elif label.split('_')[0] == 'Pedestrian' : #거리 추가/ 거리에 따른 피드백
                             plot_one_box(xyxy, im0, label=label, color=(0,0,200), line_thickness=opt.line_thickness)
-
+                            bbox = np.array((int(xyxy[0]),int(xyxy[1]),int(xyxy[2]),int(xyxy[3])))
+                            car3 = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter, traffic_light= True) #신호등 거리 계산
+                            car3.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=traffic_light_history)                            
+                            
                         elif label == 'RoadMark_StopLine' or label == 'RoadMark_Crosswalk': # 거리 추가/ 빨간불일때,상대속도로 급정차 유무 판단 및 정지선 지킴 유무 판단 
                             plot_one_box(xyxy, im0, label=label, color=(0,0,150), line_thickness=opt.line_thickness)
 
-                        #### 
+                        ####
                         # 차선 이탈유무 판단 추가
                         ####
                         else: #traffic sign 피드백, RoadMark 피드백 / 현재 사용 x
