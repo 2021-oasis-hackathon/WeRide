@@ -60,7 +60,7 @@ def area(bbox):
 
 
 class Car:
-    def __init__(self, bounding_box, first=False, warped_size=None, transform_matrix=None, pix_per_meter=None):
+    def __init__(self, bounding_box, first=False, warped_size=None, transform_matrix=None, pix_per_meter=None, traffic_light=False):
         self.warped_size = warped_size
         self.transform_matrix = transform_matrix
         self.pix_per_meter = pix_per_meter
@@ -69,18 +69,22 @@ class Car:
                             and self.pix_per_meter is not None
 
         self.filtered_bbox = DigitalFilter(bounding_box, 1/21*np.ones(21, dtype=np.float32), np.array([1.0, 0]))
-        self.position = DigitalFilter(self.calculate_position(bounding_box), 1/21*np.ones(21, dtype=np.float32), np.array([1.0, 0]))
+        self.position = DigitalFilter(self.calculate_position(bounding_box, traffic_light), 1/21*np.ones(21, dtype=np.float32), np.array([1.0, 0]))
         self.found = True
         self.num_lost = 0
         self.num_found = 0
         self.display = first
         self.fps = 25
 
-    def calculate_position(self, bbox):
-        if (self.has_position):
+    def calculate_position(self, bbox, traffic_light):
+        if (self.has_position) and (not traffic_light):
             pos = np.array((bbox[0]/2+bbox[2]/2, bbox[3])).reshape(1, 1, -1)
             dst = cv2.perspectiveTransform(pos, self.transform_matrix).reshape(-1, 1)
             return np.array((self.warped_size[1]-dst[1])/self.pix_per_meter[1]+4)
+        elif (self.has_position) and traffic_light:
+            pos = np.array((bbox[0]/2+bbox[2]/2, bbox[3])).reshape(1, 1, -1)
+            dst = cv2.perspectiveTransform(pos, self.transform_matrix).reshape(-1, 1)
+            return np.array(((self.warped_size[1]-dst[1])/self.pix_per_meter[1])+8)
         else:
             return np.array([0])
 
@@ -127,7 +131,7 @@ def detect(opt):
     transform_matrix = perspective_data["perspective_transform"]
     pixels_per_meter = perspective_data['pixels_per_meter']
     orig_points = perspective_data["orig_points"]
-    warped_size = (300, 640)
+    warped_size = (640, 1280)
     ################
 
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
@@ -215,6 +219,7 @@ def detect(opt):
                 
                 #### 이전 프레임 거리
                 frame_history=0
+                traffic_light_history=0
                 ####
                 
                 # Write results
@@ -234,25 +239,36 @@ def detect(opt):
                         if label == 'manholecover' or label == 'pothole' or label == 'roadcrack': # 단순 사용자 피드백
                             plot_one_box(xyxy, im0, label=label, color=(0,0,255), line_thickness=opt.line_thickness)
                             user_feedback(feedback_xyxy, im0, label='Watch out for obstacle!', color=(0,0,255), line_thickness=5)
-                        # elif label.split('_')[0] == 'Vehicle' : #거리 추가/ 거리 및 상대 속도에 따른 충돌 위험 피드백
-                        #     if int(xyxy[2])-int(xyxy[0]) > int(im0.shape[1]/2) or int(xyxy[3])-int(xyxy[1]) > int(im0.shape[0]/2):
-                        #         plot_one_box(xyxy, im0, label='Warning', color=(0,0,255), line_thickness=opt.line_thickness)
-                        #     else:
-                        #         plot_one_box(xyxy, im0, label=label, color=(128,128,128), line_thickness=opt.line_thickness)
-                        elif label.split('_')[0] == 'TrafficLight' : #거리 추가/ 거리에 따른 정차 유무 판단 후 피드백
-                            # if label == 'TrafficLight_Red':
-                            plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
-                        elif label.split('_')[0] == 'Pedestrian' : #거리 추가/ 거리에 따른 피드백
-                            plot_one_box(xyxy, im0, label=label, color=(0,0,200), line_thickness=opt.line_thickness)
-                        elif label == 'RoadMark_StopLine' or label == 'RoadMark_Crosswalk': # 거리 추가/ 빨간불일때,상대속도로 급정차 유무 판단 및 정지선 지킴 유무 판단 
-                            plot_one_box(xyxy, im0, label=label, color=(0,0,150), line_thickness=opt.line_thickness)
-                        #### 차선 이탈유무 판단 추가
-                        elif label.split('_')[0] == 'Vehicle'  :
+
+                        elif label.split('_')[0] == 'Vehicle' : #거리 추가/ 거리 및 상대 속도에 따른 충돌 위험 피드백
+                            # if int(xyxy[2])-int(xyxy[0]) > int(im0.shape[1]/2) or int(xyxy[3])-int(xyxy[1]) > int(im0.shape[0]/2):
+                            #     plot_one_box(xyxy, im0, label='Warning', color=(0,0,255), line_thickness=opt.line_thickness)
+                            # else:
+                            #     plot_one_box(xyxy, im0, label=label, color=(128,128,128), line_thickness=opt.line_thickness)
                             bbox = np.array((int(xyxy[0]),int(xyxy[1]),int(xyxy[2]),int(xyxy[3])))
-                            car = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter)
-                            plot_one_box(xyxy, im0, label=label, color=(128,128,128), line_thickness=opt.line_thickness)
+                            car = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter) #차량 거리 계산
+                            plot_one_box(xyxy, im0, label=label, color=(128,128,128), line_thickness=opt.line_thickness) 
                             car.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=frame_history)
                             frame_history=car.draw(im0, color=(0, 0, 255), thickness=2)
+                            if frame_history < 1.5 : #거리가 가까우면 충돌 위험 피드백
+                                user_feedback(feedback_xyxy, im0, label='Too close!', color=(0,0,200), line_thickness=5)
+                        
+                        elif label.split('_')[0] == 'TrafficLight' : #거리 추가/ 거리에 따른 정차 유무 판단 후 피드백
+                            # if label == 'TrafficLight_Red':
+                            bbox = np.array((int(xyxy[0]),int(xyxy[1]),int(xyxy[2]),int(xyxy[3])))
+                            car2 = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter, traffic_light= True) #신호등 거리 계산
+                            car2.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=traffic_light_history)
+                            traffic_light_history=car2.draw(im0, color=(0, 0, 255), thickness=2)
+                            plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
+                            
+                        elif label.split('_')[0] == 'Pedestrian' : #거리 추가/ 거리에 따른 피드백
+                            plot_one_box(xyxy, im0, label=label, color=(0,0,200), line_thickness=opt.line_thickness)
+
+                        elif label == 'RoadMark_StopLine' or label == 'RoadMark_Crosswalk': # 거리 추가/ 빨간불일때,상대속도로 급정차 유무 판단 및 정지선 지킴 유무 판단 
+                            plot_one_box(xyxy, im0, label=label, color=(0,0,150), line_thickness=opt.line_thickness)
+
+                        #### 
+                        # 차선 이탈유무 판단 추가
                         ####
                         else: #traffic sign 피드백, RoadMark 피드백 / 현재 사용 x
                             plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
