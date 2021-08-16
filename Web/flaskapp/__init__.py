@@ -1,5 +1,4 @@
-#flask/__init__.py
-
+#flask/__init__.py 
 from flask import Flask, g, request, Response, make_response, session, render_template
 from flask import Markup, redirect, url_for
 from datetime import datetime, date, timedelta
@@ -8,18 +7,13 @@ app=Flask(__name__)
 app.debug = True
 #app.jinja_env.trim_blocks = True
 
+@app.route('/score')
+def score():
+    return render_template("score.html")
 
-app.config.update(
-    SECRET_KEY='X1243yRH!mMwf',
-    SESSION_COOKIE_NAME='pyweb_flask_session',
-    PERMANENT_SESSION_LIFETIME=timedelta(31)   #31 days
-)
-
-class Nav:
-    def __init__(self, title, url='#', children=[]):
-        self.title=title
-        self.url=url
-        self.children=children
+@app.route('/service')
+def service():
+    return render_template("service.html")
 
 @app.route('/upload')
 def render_file():
@@ -30,16 +24,13 @@ def upload_file():
     if request.method == 'POST':
         f=request.files['file'] 
 
-        f.save('c:/Users/user/Desktop/오아시스/uploads' + secure_filename(f.filename)) #저장할 경로 + 파일명
+        f.save('./flaskapp/'+secure_filename(f.filename)) #저장할 경로 + 파일명
         return 'upload 성공'
 
 
 @app.route('/')
 def main1():
     return render_template("mainpage.html")
-
-
-
 
 
 @app.route('/wc')

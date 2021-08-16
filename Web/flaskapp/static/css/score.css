@@ -1,0 +1,299 @@
+@charset 'utf=8';
+
+/* 눈누 폰트 loading  */
+
+@font-face {
+    font-family: 'twayair';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_tway@1.0/twayair.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Pretendard-Bold';
+    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
+    font-weight: 400,500,600,700,900;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Pretendard-Black';
+    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Black.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+        font-family: 'Pretendard-ExtraBold';
+        src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-ExtraBold.woff') format('woff');
+        font-weight: 800;
+        font-style: normal;
+    }
+
+@font-face {
+        font-family: 'Pretendard-SemiBold';
+        src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-SemiBold.woff') format('woff');
+        font-weight: 600;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: 'IM_Hyemin-Bold';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2106@1.1/IM_Hyemin-Bold.woff2') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+html :not(.name,.scroll-section,.footer,.scorebox,h3,p,#action){
+    font-family : 'Pretendard-Regular';
+    font-size : 14px;
+}
+
+/*body의 가로 스크롤 없애주고, 자간 줄임*/
+body {
+background-image: url('backgb.png');
+   overflow-x: hidden;
+   color: rgb(29,29,31);
+   letter-spacing: -0.05em;
+   background:rgb(248,248,248);
+}
+p :not(.sub-message){
+    line-height: 1.6;
+}
+a{
+    color :rgb(29,29,31);
+    text-decoration: none;
+}
+
+.global-nav {
+    height: 52px;
+    padding: 0 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+/*flex로 가로 정렬, center로 가운데 정렬*/
+.global-nav-links {
+    display: flex;
+    align-items: center;
+    /* justify-content: space-between; */
+    max-width: 1500px;
+    height: 100%;
+    
+}
+
+.global-nav-item {
+    font-weight: bold;
+}
+/* 우선순위에 밀릴 경우에는 global-nav-links.name으로 바꿔라 */
+.name {
+    font-family: 'Pretendard-ExtraBold';
+    margin-right: 150px;
+    margin-left: 20px;
+    font-size: 1.5rem;
+    font-family: Pretendard-Black;
+}
+
+.global-nav-links a:not(.name,.LOGIN){
+    margin-left : 2em;
+    margin-right: 2em
+}
+
+
+.LOGIN {
+    font-size:0.8rem;
+    margin-left: 600px;
+    font-weight: bold;
+}
+
+
+/* scroebox 레이아웃 */
+
+.scorebox {
+    box-shadow: 0.1px 0.1px 5px rgb(126, 126, 126);
+    position:absolute; top: 40px; left:0; z-index:10;
+    background-color: rgb(244,244,244);
+    margin-top: 55px;
+    margin-left:27%;
+    font: size 0.9em;
+    line-height: 2.0;
+    width: 700px;
+    height: 600px;
+    padding: 30px;
+    border-radius: 25px;
+    border: solid 1px #cfcfcf;
+
+}
+
+
+/* 나의 운전 습관 */
+.scorebox h3 {
+    letter-spacing: 1px;
+    font-family: 'Pretendard-ExtraBold';
+    color: #565557;
+    margin-top:-10px;
+    margin-left: px;
+    margin-bottom: 20px;
+    text-align: left;
+    font-size: 25px;
+    
+}
+
+/* 정말 대단해요! */
+#good {
+    letter-spacing: 0.6px;
+    font-size: 16px;
+    font-family: 'Pretendard-SemiBold';
+    line-height: 1.5;
+    margin-left: 10px;
+    color: #000000;
+}
+
+/* scroe나오는 box */
+#box {
+
+    box-shadow: 0.1px 0.1px 6px rgb(126, 126, 126);
+    background-color: rgb(255, 255, 255);
+    margin-bottom: 120px;
+    font: size 0.9em;
+    line-height: 2.0;
+    width: 640px;
+    height: 258px;
+    border-radius: 25px;
+    border: solid 1px #cfcfcf;
+}
+
+/* 점수 */
+#action {
+    font-size: 80px;
+    margin-top: 45px;
+    font-family: 'Pretendard-SemiBold';
+    margin-left: 73px;
+}
+
+/* 수직선 */
+.verticalLine {
+    margin-top: -170px;
+    margin-left: 317px;
+    border-left: 3px solid rgb(189, 189, 189);
+    height: 200px;
+
+  }
+
+  
+
+.backgroundbox {
+  position:relative;
+  width: 2000px;
+  height: 300px;
+  margin: 0px 3px 457px 0;
+  background-color: #a208fc;
+}
+
+
+
+/* button 구현 */
+
+.button {
+    position: absolute;
+    top:69%;
+    left:50%;
+    transform: translate(-50%,-50%);
+}
+
+.wave {
+    border: 1px solid #a20afa;
+    color: #fff;
+    width: 70px;
+    height: 70px;
+    background-color: #a20afa;
+    font-size:60px;
+    text-align:center;
+    line-height: 100px;
+    border-radius: 100%;
+}
+
+.wave:before,
+.wave:after {
+    content: '';
+    position: absolute;
+    border:13px solid #a20afa;
+    width: inherit;
+    height: inherit;
+    left:0;
+    top:0;
+    box-sizing: border-box;
+    border-radius: 100%;
+    opacity: 0;
+    animation: ani 1s linear infinite;
+}
+.wave:after {
+    animation-delay: 0.5s;
+}
+
+
+@keyframes ani {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.5);
+    }
+}
+
+/* button 속 글씨 */
+.wave p {
+    color : white;
+    position: absolute;
+    margin-top: -15px;
+    margin-left: 13px;
+    font-size: 17px;
+    font-family: 'twayair';
+    letter-spacing: 0.1em;
+    
+}
+
+/*원형그래프*/
+
+
+/* 그래프가 나타나는 빠르기 */
+.circle-chart__circle {
+  animation: circle-chart-fill 1s reverse; /* 1 */ 
+  transform: rotate(-90deg); /* 2, 3 */
+  transform-origin: center; /* 4 */
+}
+
+/* 그래프 사이 글씨 나타나는 빠르기 */
+.circle-chart__info {
+  animation: circle-chart-appear 2s forwards;
+  opacity: 0;
+  transform: translateY(0.3em);
+}
+
+@keyframes circle-chart-fill {
+  to { stroke-dasharray: 0 100; }
+}
+
+@keyframes circle-chart-appear {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.grid {
+  margin-left: 50px;
+  display: grid;
+  grid-column-gap: 1em;
+  grid-row-gap: 1em;
+  grid-template-columns: repeat(1, 1fr);
+}
+
+@media (min-width: 31em) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
