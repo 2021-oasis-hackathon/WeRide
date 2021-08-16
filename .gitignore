@@ -1,7 +1,8 @@
 ### object detection testing files ###
+*.pdf
 yolov5/data/
 yolov5/runs/
-
+yolov5/detect_distance.py
 ### weight file ###
 yolov5/*.pt
 
