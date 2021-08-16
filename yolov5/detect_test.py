@@ -60,7 +60,7 @@ def area(bbox):
 
 
 class Car:
-    def __init__(self, bounding_box, first=False, warped_size=None, transform_matrix=None, pix_per_meter=None, traffic_light=False):
+    def __init__(self, bounding_box, first=False, warped_size=None, transform_matrix=None, pix_per_meter=None, object=None):
         self.warped_size = warped_size
         self.transform_matrix = transform_matrix
         self.pix_per_meter = pix_per_meter
@@ -69,22 +69,26 @@ class Car:
                             and self.pix_per_meter is not None
 
         self.filtered_bbox = DigitalFilter(bounding_box, 1/21*np.ones(21, dtype=np.float32), np.array([1.0, 0]))
-        self.position = DigitalFilter(self.calculate_position(bounding_box, traffic_light), 1/21*np.ones(21, dtype=np.float32), np.array([1.0, 0]))
+        self.position = DigitalFilter(self.calculate_position(bounding_box, object), 1/21*np.ones(21, dtype=np.float32), np.array([1.0, 0]))
         self.found = True
         self.num_lost = 0
         self.num_found = 0
         self.display = first
         self.fps = 20
 
-    def calculate_position(self, bbox, traffic_light):
-        if (self.has_position) and (not traffic_light):
+    def calculate_position(self, bbox, object):
+        if (self.has_position) and (object == 0):   #vehicle
             pos = np.array((bbox[0]/2+bbox[2]/2, bbox[3])).reshape(1, 1, -1)
             dst = cv2.perspectiveTransform(pos, self.transform_matrix).reshape(-1, 1)
-            return np.array(((self.warped_size[1]-dst[1])/self.pix_per_meter[1]+2)*1.3*1.3) ##초점 조절
-        elif (self.has_position) and traffic_light:
+            return np.array(((self.warped_size[1]-dst[1])/self.pix_per_meter[1]+2)*1.3*1.3*1.3*1.3) ##초점 조절
+        elif (self.has_position) and (object == 1):   #traffic_light
             pos = np.array((bbox[0]/2+bbox[2]/2, bbox[3])).reshape(1, 1, -1)
             dst = cv2.perspectiveTransform(pos, self.transform_matrix).reshape(-1, 1)
-            return np.array((self.warped_size[1]-dst[1])/(self.pix_per_meter[1]*10)) ## 초점 조절
+            return np.array((self.warped_size[1]-dst[1])/(self.pix_per_meter[1]*1.3*1.3*1.3*1.3)) ## 초점 조절
+        elif (self.has_position) and (object == 2):    #pedestrian
+            pos = np.array((bbox[0]/2+bbox[2]/2, bbox[3])).reshape(1, 1, -1)
+            dst = cv2.perspectiveTransform(pos, self.transform_matrix).reshape(-1, 1)
+            return np.array((self.warped_size[1]-dst[1])/(self.pix_per_meter[1]*1.3*1.3*1.3*1.3)) ## 초점 조절
         else:
             return np.array([0])
 
@@ -107,8 +111,8 @@ class Car:
                             cv2.FONT_HERSHEY_PLAIN, fontScale=1.25, thickness=3, color=(255, 255, 255))
                 cv2.putText(img, "RS: {:6.2f}km/h".format((self.position.output()[0]-frame_history)*self.fps*3.6), (int(window[0]), int(window[3]+35)),
                             cv2.FONT_HERSHEY_PLAIN, fontScale=1.25, thickness=2, color=(0, 0, 0))
-            print("현재거리:",self.position.output()[0])
-            print("이전 거리: ", frame_history)
+            # print("현재거리:",self.position.output()[0])
+            # print("이전 거리: ", frame_history)
 ############
 
 def user_feedback(x, im, color=(128, 128, 128), label=None, line_thickness=3):
@@ -125,7 +129,10 @@ def user_feedback(x, im, color=(128, 128, 128), label=None, line_thickness=3):
         cv2.putText(im, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
 
 #시나리오별 점수 계산
-def caculate_drive(xyxy, im0,label,c,perspective_data,frame_history, traffic_light_history): #bbox/img/label/class/matrix/frame_history for 상대속도 
+def caculate_drive(xyxy, im0, label, c, perspective_data,
+                  vehicle_frame_history, 
+                  traffic_light_frame_history,
+                  pedestrian_frame_history): #bbox/img/label/class/matrix/frame_history for 상대속도 
     ####### 변환 매트릭스 수정 부분
     transform_matrix = perspective_data["perspective_transform"]
     transfrom_matrix_reverse = transform_matrix[::-1] ##신호등 거리 계산을 위해 변환행열을 위아래 대칭으로 바꿈
@@ -136,6 +143,7 @@ def caculate_drive(xyxy, im0,label,c,perspective_data,frame_history, traffic_lig
     distance=0
     
     mid_point=int(im0.shape[1]/2)
+    bbox = np.array((int(xyxy[0]),int(xyxy[1]),int(xyxy[2]),int(xyxy[3])))
     # ####수정
     feedback_xyxy=[0,50,1000,10]
     if label == 'manholecover' or label == 'pothole' or label == 'roadcrack': # 단순 사용자 피드백
@@ -143,36 +151,37 @@ def caculate_drive(xyxy, im0,label,c,perspective_data,frame_history, traffic_lig
         user_feedback(feedback_xyxy, im0, label='Watch out for obstacle!', color=(0,0,255), line_thickness=5)
 
     elif label.split('_')[0] == 'Vehicle' : #거리 추가/ 거리 및 상대 속도에 따른 충돌 위험 피드백
-        # if int(xyxy[2])-int(xyxy[0]) > int(im0.shape[1]/2) or int(xyxy[3])-int(xyxy[1]) > int(im0.shape[0]/2):
-        #     plot_one_box(xyxy, im0, label='Warning', color=(0,0,255), line_thickness=opt.line_thickness)
-        # else:
-        #     plot_one_box(xyxy, im0, label=label, color=(128,128,128), line_thickness=opt.line_thickness)
         plot_one_box(xyxy, im0, label=label, color=(128,128,128), line_thickness=opt.line_thickness)
-        bbox = np.array((int(xyxy[0]),int(xyxy[1]),int(xyxy[2]),int(xyxy[3])))
+        
         if bbox[0] <= mid_point and mid_point <= bbox[2]:
-            car = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter) #차량 거리 계산
-            car.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=frame_history)
-            frame_history=car.draw(im0, color=(0, 0, 255), thickness=2)
+            car = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter, object= 0) #차량 거리 계산
+            car.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=vehicle_frame_history)
+            vehicle_frame_history=car.draw(im0, color=(0, 0, 255), thickness=2)
         else:
-            car = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter) #차량 거리 계산
+            car = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter, object= 0) #차량 거리 계산
             distance=car.draw(im0, color=(0, 0, 255), thickness=2)
 
         if distance < 1.5 : #거리가 가까우면 충돌 위험 피드백
             user_feedback(feedback_xyxy, im0, label='Too close!', color=(0,0,200), line_thickness=5)
     
     elif label.split('_')[0] == 'TrafficLight' : #거리 추가/ 거리에 따른 정차 유무 판단 후 피드백
-        # if label == 'TrafficLight_Red':
-        bbox = np.array((int(xyxy[0]),int(xyxy[1]),int(xyxy[2]),int(xyxy[3])))
-        car2 = Car(bbox, True, warped_size_light, transfrom_matrix_reverse, pixels_per_meter, traffic_light= True) #신호등 거리 계산
-        car2.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=traffic_light_history)
-        traffic_light_history=car2.draw(im0, color=(0, 0, 255), thickness=2)
         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
+        # if label == 'TrafficLight_Red':
+        if bbox[0] <= mid_point and mid_point <= bbox[2]:
+            car2 = Car(bbox, True, warped_size_light, transfrom_matrix_reverse, pixels_per_meter, object= 1) #신호등 거리 계산
+            car2.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=traffic_light_frame_history)
+            traffic_light_frame_history=car2.draw(im0, color=(0, 0, 255), thickness=2)
+        else:
+            car2 = Car(bbox, True, warped_size_light, transfrom_matrix_reverse, pixels_per_meter, object= 1)
+            car2.draw(im0, color=(0, 0, 255), thickness=2)
         
     elif label.split('_')[0] == 'Pedestrian' : #거리 추가/ 거리에 따른 피드백
         plot_one_box(xyxy, im0, label=label, color=(0,0,200), line_thickness=opt.line_thickness)
-        bbox = np.array((int(xyxy[0]),int(xyxy[1]),int(xyxy[2]),int(xyxy[3])))
-        car3 = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter, traffic_light= True) #신호등 거리 계산
-        car3.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=traffic_light_history)                            
+
+        if bbox[0] <= mid_point and mid_point <= bbox[2]:
+            car3 = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter, object= 2) 
+            car3.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=pedestrian_frame_history)
+            pedestrian_frame_history=car3.draw(im0, color=(0, 0, 255), thickness=2)
         
     elif label == 'RoadMark_StopLine' or label == 'RoadMark_Crosswalk': # 거리 추가/ 빨간불일때,상대속도로 급정차 유무 판단 및 정지선 지킴 유무 판단 
         plot_one_box(xyxy, im0, label=label, color=(0,0,150), line_thickness=opt.line_thickness)
@@ -183,7 +192,7 @@ def caculate_drive(xyxy, im0,label,c,perspective_data,frame_history, traffic_lig
     else: #traffic sign 피드백, RoadMark 피드백 / 현재 사용 x
         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
 
-    return frame_history, traffic_light_history
+    return vehicle_frame_history, traffic_light_frame_history, pedestrian_frame_history
 
 def detect(opt):
     ################ distance part
@@ -191,8 +200,9 @@ def detect(opt):
     with open(PERSPECTIVE_FILE_NAME, 'rb') as f:
         perspective_data = pickle.load(f)
     #### 이전 프레임 거리
-    frame_history=0
-    traffic_light_history=0
+    vehicle_frame_history=0
+    traffic_light_frame_history=0
+    pedestrian_frame_history=0
     ####
     ###################
 
@@ -291,7 +301,11 @@ def detect(opt):
                         c = int(cls)  # integer class
                         label = None if opt.hide_labels else (names[c] if opt.hide_conf else f'{names[c]} {conf:.2f}')
                         # plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
-                        frame_history,traffic_light_history =caculate_drive(xyxy,im0,label,c,perspective_data,frame_history, traffic_light_history)
+                        vehicle_frame_history,traffic_light_frame_history,pedestrian_frame_history = caculate_drive(
+                                                                                     xyxy,im0,label,c,perspective_data,
+                                                                                     vehicle_frame_history, 
+                                                                                     traffic_light_frame_history,
+                                                                                     pedestrian_frame_history)
                         
                         if opt.save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
