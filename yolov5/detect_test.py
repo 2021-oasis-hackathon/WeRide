@@ -74,7 +74,7 @@ class Car:
         self.num_lost = 0
         self.num_found = 0
         self.display = first
-        self.fps = 25
+        self.fps = 20
 
     def calculate_position(self, bbox, traffic_light):
         if (self.has_position) and (not traffic_light):
@@ -93,20 +93,22 @@ class Car:
             window = self.filtered_bbox.output().astype(np.int32)
             # cv2.rectangle(img, (window[0], window[1]), (window[2], window[3]), color, thickness)
             if self.has_position and self.position.output()[0] :
-                cv2.putText(img, "RPos: {:6.2f}m".format(self.position.output()[0]), (int(window[0]), int(window[3]+20)),
+                cv2.putText(img, "{:6.2f}m".format(self.position.output()[0]), (int(window[0]), int(window[3]+20)),
                             cv2.FONT_HERSHEY_PLAIN, fontScale=1.25, thickness=3, color=(255, 255, 255))
-                cv2.putText(img, "RPos: {:6.2f}m".format(self.position.output()[0]), (int(window[0]), int(window[3]+20)),
+                cv2.putText(img, "{:6.2f}m".format(self.position.output()[0]), (int(window[0]), int(window[3]+20)),
                             cv2.FONT_HERSHEY_PLAIN, fontScale=1.25, thickness=2, color=(0, 0, 0))
         return self.position.output()[0]
 
     def draw_speed(self, img, color=(255, 0, 0), thickness=2, frame_history= 0 ):
         if self.display:
             window = self.filtered_bbox.output().astype(np.int32)
-            if self.has_position and self.position.output()[0] :
-                cv2.putText(img, "RVel: {:6.2f}km/h".format((self.position.output()[0]-frame_history)*self.fps*3.2), (int(window[0]), int(window[3]+35)),
+            if self.has_position and self.position.output()[0] : # 1프레임 당 이동거리(m)*FPS*3600/1000=1초 당 이동거리(m)*3600/1000=1시간 당 이동거리(m)/1000=1시간 당 이동거리(km)
+                cv2.putText(img, "RS: {:6.2f}km/h".format((self.position.output()[0]-frame_history)*self.fps*3.6), (int(window[0]), int(window[3]+35)),
                             cv2.FONT_HERSHEY_PLAIN, fontScale=1.25, thickness=3, color=(255, 255, 255))
-                cv2.putText(img, "RVel: {:6.2f}km/h".format((self.position.output()[0]-frame_history)*self.fps*3.2), (int(window[0]), int(window[3]+35)),
+                cv2.putText(img, "RS: {:6.2f}km/h".format((self.position.output()[0]-frame_history)*self.fps*3.6), (int(window[0]), int(window[3]+35)),
                             cv2.FONT_HERSHEY_PLAIN, fontScale=1.25, thickness=2, color=(0, 0, 0))
+            print("현재거리:",self.position.output()[0])
+            print("이전 거리: ", frame_history)
 ############
 
 def user_feedback(x, im, color=(128, 128, 128), label=None, line_thickness=3):
@@ -131,7 +133,9 @@ def caculate_drive(xyxy, im0,label,c,perspective_data,frame_history, traffic_lig
     orig_points = perspective_data["orig_points"]
     warped_size = (364, 640)
     warped_size_light = (364, 640)
-
+    distance=0
+    
+    mid_point=int(im0.shape[1]/2)
     # ####수정
     feedback_xyxy=[0,50,1000,10]
     if label == 'manholecover' or label == 'pothole' or label == 'roadcrack': # 단순 사용자 피드백
@@ -143,12 +147,17 @@ def caculate_drive(xyxy, im0,label,c,perspective_data,frame_history, traffic_lig
         #     plot_one_box(xyxy, im0, label='Warning', color=(0,0,255), line_thickness=opt.line_thickness)
         # else:
         #     plot_one_box(xyxy, im0, label=label, color=(128,128,128), line_thickness=opt.line_thickness)
+        plot_one_box(xyxy, im0, label=label, color=(128,128,128), line_thickness=opt.line_thickness)
         bbox = np.array((int(xyxy[0]),int(xyxy[1]),int(xyxy[2]),int(xyxy[3])))
-        car = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter) #차량 거리 계산
-        plot_one_box(xyxy, im0, label=label, color=(128,128,128), line_thickness=opt.line_thickness) 
-        car.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=frame_history)
-        frame_history=car.draw(im0, color=(0, 0, 255), thickness=2)
-        if frame_history < 1.5 : #거리가 가까우면 충돌 위험 피드백
+        if bbox[0] <= mid_point and mid_point <= bbox[2]:
+            car = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter) #차량 거리 계산
+            car.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=frame_history)
+            frame_history=car.draw(im0, color=(0, 0, 255), thickness=2)
+        else:
+            car = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter) #차량 거리 계산
+            distance=car.draw(im0, color=(0, 0, 255), thickness=2)
+
+        if distance < 1.5 : #거리가 가까우면 충돌 위험 피드백
             user_feedback(feedback_xyxy, im0, label='Too close!', color=(0,0,200), line_thickness=5)
     
     elif label.split('_')[0] == 'TrafficLight' : #거리 추가/ 거리에 따른 정차 유무 판단 후 피드백
@@ -174,11 +183,17 @@ def caculate_drive(xyxy, im0,label,c,perspective_data,frame_history, traffic_lig
     else: #traffic sign 피드백, RoadMark 피드백 / 현재 사용 x
         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
 
+    return frame_history, traffic_light_history
+
 def detect(opt):
     ################ distance part
     PERSPECTIVE_FILE_NAME = 'projection.p'
     with open(PERSPECTIVE_FILE_NAME, 'rb') as f:
         perspective_data = pickle.load(f)
+    #### 이전 프레임 거리
+    frame_history=0
+    traffic_light_history=0
+    ####
     ###################
 
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
@@ -264,11 +279,6 @@ def detect(opt):
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
                 
-                #### 이전 프레임 거리
-                frame_history=0
-                traffic_light_history=0
-                ####
-                
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     if save_txt:  # Write to file
@@ -281,7 +291,7 @@ def detect(opt):
                         c = int(cls)  # integer class
                         label = None if opt.hide_labels else (names[c] if opt.hide_conf else f'{names[c]} {conf:.2f}')
                         # plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
-                        caculate_drive(xyxy,im0,label,c,perspective_data,frame_history, traffic_light_history)
+                        frame_history,traffic_light_history =caculate_drive(xyxy,im0,label,c,perspective_data,frame_history, traffic_light_history)
                         
                         if opt.save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
