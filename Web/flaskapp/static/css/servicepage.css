@@ -28,18 +28,18 @@
     }
 
 
-html :not(.name,.scroll-section,.footer){
+html :not(.name,.scroll-section,.footerm,.title,.button){
     font-family : 'Pretendard-Regular';
     font-size : 14px;
 }
 
 /*body의 가로 스크롤 없애주고, 자간 줄임*/
 body {
-
+    
    overflow-x: hidden;
    color: rgb(29,29,31);
    letter-spacing: -0.05em;
-   background:rgb(248,248,248);
+   background:rgb(240,240,240);
 }
 p :not(.sub-message){
     line-height: 1.6;
@@ -96,7 +96,7 @@ a{
 #scroll-section-0 h1 {
     line-height: 170%;
     font-family:'Pretendard-ExtraBold';
-    font-size: 3.7rem;
+    font-size: 3.5rem;
     text-align: left;
     color:rgb(80,0,99);
     margin-left : 302px
@@ -114,23 +114,58 @@ a{
     line-height: 2.0;
 }
 
-.mainroad2{
 
-    margin-left: 300px;
-    width : 1200px;
-    height : 300px;
+.image{
+    width: 400px;
+    height: 550px;
+    margin-left: 90px;
+    margin-top: 70px;
+    
 }
 
+.title{
+    float:left;
+    margin-left: 310px;
+    margin-top : 100px;
+}
 
-.footer{
-    clear:both;
+#AI {
+    font-family: 'Pretendard-ExtraBold';
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 35.5px;
+    line-height: 60px;
+    color : rgb(85, 85, 85);
+}
+
+#very {
+    font-family: 'Pretendard';
+    font-weight: bold;
+    font-size: 20.5px;
+    line-height: 38px;
+    color : rgb(0, 0, 0);
+    margin-bottom: 15px;
+}
+
+.button {
+    font-family: 'Pretendard-ExtraBold';
+    margin-top: 25px;
+    margin-left: 1px;
+    width: 130px;
+    height: 40px;
+    background-color: #000000;
+    border-radius: 5px;
+    padding : 7px;
+
+}
+
+#moo {
+    font-family: 'Pretendard-ExtraBold';
+    color: white;
+    font-size: 15px;
     text-align: center;
-    font-family: 'Pretendard-Bold';
-    left: 30%;
-    padding-top:20px;
-    padding-bottom : 10px;
-    color: rgb(204, 204, 204);
-    background-color: rgb(248,248,248); ;
-    border: 1px solid rgb(204, 204, 204);
-}
+    font-weight: bold;
+    margin-top: 3.5px;
+    letter-spacing: 0.05em;
 
+}

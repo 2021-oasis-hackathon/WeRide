@@ -7,6 +7,10 @@ app=Flask(__name__)
 app.debug = True
 #app.jinja_env.trim_blocks = True
 
+@app.route('/analysis')
+def analysis():
+    return render_template('analysis.html')
+
 @app.route('/score')
 def score():
     return render_template("score.html")
@@ -25,8 +29,11 @@ def upload_file():
         f=request.files['file'] 
 
         f.save('./flaskapp/'+secure_filename(f.filename)) #저장할 경로 + 파일명
-        return 'upload 성공'
+        return render_template('success.html')
 
+@app.route('/servicepage')
+def servicepage():
+    return render_template("servicepage.html")
 
 @app.route('/')
 def main1():
