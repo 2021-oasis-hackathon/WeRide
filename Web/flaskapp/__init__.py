@@ -30,8 +30,11 @@ def upload_file():
         f=request.files['file'] 
         filename=f.filename
         #dirname=f.filename[:4]
-        f.save('../yolov5/data/testing/'+secure_filename(f.filename)) #저장할 경로 + 파일명
-        cmd=("python ../yolov5/detect_test.py --source /data/testing/%s" %(filename))
+        f.save('../test_video/'+secure_filename(f.filename)) #저장할 경로 + 파일명
+        
+        cmd=("python ../yolov5/main.py --source ../test_video/%s" %(filename))
+
+
         os.system(cmd)
         return render_template('success.html')
 
