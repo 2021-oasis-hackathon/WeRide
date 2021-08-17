@@ -403,9 +403,8 @@ def result_info(score_result, fps): #case 0=Null/1=차량거리 유지/2=차량 
                 score-=1
 
     print("총점:",score)
-    print(s)
 
-    return s
+    return s,score
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -443,4 +442,4 @@ if __name__ == '__main__':
         else:
             score_result, fps = detect(opt=opt)
     
-    result_info(score_result,fps)
+    score_table, total_score = result_info(score_result,fps)
