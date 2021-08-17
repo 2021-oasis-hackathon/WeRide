@@ -11,3 +11,9 @@ results.txt
 
 ### 수정중 ###
 yolov5/classes.txt
+
+
+#######
+yolov5/__pycache__/
+yolov5/**/__pycache__/
+
