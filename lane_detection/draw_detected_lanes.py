@@ -44,7 +44,13 @@ def road_lines(image):
     # Re-size to match the original image
     lane_image = np.array(Image.fromarray((lane_drawn * 255).astype(np.uint8)).resize((image.shape[1],image.shape[0])).convert('RGB'))
     # Merge the lane drawing onto the original image
-    result = cv2.addWeighted(image, 1, lane_image, 1, 0)
+    temp = [0, int(lane_image.shape[1] / 3), int(lane_image.shape[1] * 2 / 3), lane_image[0].shape]
+    img_resized1 = np.zeros_like(lane_image[0:lane_image.shape[0], 0:temp[1]]).astype(np.uint8)
+    roi = lane_image[0:lane_image.shape[0], temp[1]:temp[2]]
+    img = np.concatenate((img_resized1, roi, img_resized1), axis=1)
+    img = cv2.resize(img, (image.shape[1], image.shape[0]))
+
+    result = cv2.addWeighted(image, 1, img, 1, 0)
     
     return result
 
