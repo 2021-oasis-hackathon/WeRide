@@ -26,6 +26,8 @@ from scipy.ndimage.measurements import label
 from skimage.feature import hog
 
 from settings import CALIB_FILE_NAME, PERSPECTIVE_FILE_NAME, UNWARPED_SIZE, ORIGINAL_SIZE
+########
+from os import system
 
 class DigitalFilter:
 
@@ -409,7 +411,7 @@ def result_info(score_result, fps): #case 0=Null/1=차량거리 유지/2=차량 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='best(epoch 16 final).pt', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='data/testing/', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--source', type=str, default='../test_video/', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--img-size', type=int, default=1280, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='object confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')
@@ -424,7 +426,7 @@ if __name__ == '__main__':
     parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
     parser.add_argument('--augment', action='store_true', help='augmented inference')
     parser.add_argument('--update', action='store_true', help='update all models')
-    parser.add_argument('--project', default='runs/detect', help='save results to project/name')
+    parser.add_argument('--project', default='../output/', help='save results to project/name')
     parser.add_argument('--name', default='exp', help='save results to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     parser.add_argument('--line-thickness', default=2, type=int, help='bounding box thickness (pixels)')
@@ -443,3 +445,5 @@ if __name__ == '__main__':
             score_result, fps = detect(opt=opt)
     
     score_table, total_score = result_info(score_result,fps)
+
+    system("python main.py")

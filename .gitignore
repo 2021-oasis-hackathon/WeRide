@@ -1,5 +1,6 @@
 ### object detection testing files ###
 *.pdf
+*.mp4
 yolov5/data/
 yolov5/runs/
 yolov5/detect_distance.py
