@@ -190,7 +190,7 @@ def caculate_drive(xyxy, im0, label, c, perspective_data,
     elif label.split('_')[0] == 'Pedestrian' : #거리 추가/ 거리에 따른 피드백
         plot_one_box(xyxy, im0, label=label, color=(0,0,200), line_thickness=opt.line_thickness)
 
-        if bbox[0] <= mid_point and mid_point <= bbox[2]:
+        if bbox[0] <= int(im0.shape[1]*2/3) and int(im0.shape[1]/3) <= bbox[2]:
             car3 = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter, object= 2) 
             relative_speed=car3.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=pedestrian_frame_history)
             pedestrian_frame_history=car3.draw(im0, color=(0, 0, 255), thickness=2)
@@ -366,9 +366,16 @@ def detect(opt):
     return score_result, fps
 
 def result_info(score_result, fps): #case 0=Null/1=차량거리 유지/2=차량 급감속/3=신호위반/4=보행자 발견시 서행/5=차선이탈/6=정지선 지킴
-    total_time=score_result[0][1]/fps
     score=100
     s=f""
+
+    if len(score_result)==0:
+        s+=f'축하합니다! 만점입니다~~'
+        print("총점:",score)
+        return s,score
+    total_time=score_result[0][1]/fps
+    
+
     for time, times, cases in score_result:
         for case in cases:
             if case == 0:
