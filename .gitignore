@@ -10,7 +10,5 @@ yolov5/detect_distance.py
 yolov5/*.pt
 
 ### temp ###
-results.txt
 
 ### 수정중 ###
-yolov5/classes.txt

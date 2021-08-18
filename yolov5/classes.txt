@@ -1,0 +1,11 @@
+names: [
+-장애물 : 'manholecover','pothole','roadcrack',
+-차량: 'none_of_the_above','Vehicle_Car','Vehicle_Bus','Vehicle_Motorcycle','Vehicle_Unknown',
+-보행자: 'Pedestrian_Pedestrian','Pedestrian_Bicycle',
+-차선: 'Lane_White_Dash','Lane_White_Solid','Lane_Yellow_Dash','Lane_Yellow_Solid','Lane_Blue_Dash','Lane_Blue_Solid',
+-신호등: 'TrafficLight_Red','TrafficLight_Yellow','TrafficLight_Green',
+-신호등 (좌회전 신호): 'TrafficLight_Arrow','TrafficLight_RedArrow','TrafficLight_YellowArrow','TrafficLight_GreenArrow',
+-교통표지판: 'TrafficSign_Speed','TrafficSign_Else',
+-로드마크(도로위): 'RoadMark_StopLine','RoadMark_Crosswalk','RoadMark_Number','RoadMark_Character',
+'RoadMarkArrow_Straight','RoadMarkArrow_Left','RoadMarkArrow_Right',
+'RoadMarkArrow_StraightLeft','RoadMarkArrow_StraightRight','RoadMarkArrow_Uturn','RoadMarkArrow_Else','FreeSpace']
