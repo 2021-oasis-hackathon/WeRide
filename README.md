@@ -108,7 +108,7 @@ frame 단위로 객체의 위치를 찾는 yolov5를 활용하여 위와 같은 
 
 **mainpage 화면**
 
-![img_title](https://github.com/2021-oasis-hackathon/WeRide/blob/main/images/SCORE%ED%99%94%EB%A9%B4.png)
+![img_title](https://github.com/2021-oasis-hackathon/WeRide/blob/main/images/%EB%A9%94%EC%9D%B8%ED%99%94%EB%A9%B4.png)
 
 - mainpage.html, mainpage.css
 
@@ -118,9 +118,9 @@ frame 단위로 객체의 위치를 찾는 yolov5를 활용하여 위와 같은 
 
 **SERVICE 화면**
 
-![image-20210819025442368](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20210819025442368.png)
+![img_title](https://github.com/2021-oasis-hackathon/WeRide/blob/main/images/SERVICE%ED%99%94%EB%A9%B4.png)
 
-![image-20210819025505360](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20210819025505360.png)
+![image-20210819025505360](https://github.com/2021-oasis-hackathon/WeRide/blob/main/images/SERVICE%ED%99%94%EB%A9%B42.png)
 
 - servicepage.html, servicepage.css
 
@@ -132,7 +132,7 @@ frame 단위로 객체의 위치를 찾는 yolov5를 활용하여 위와 같은 
 
 **UPLOADING 화면**
 
-![image-20210819025830674](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20210819025830674.png)
+![image-20210819025830674](https://github.com/2021-oasis-hackathon/WeRide/blob/main/images/%EC%97%85%EB%A1%9C%EB%93%9C%ED%99%94%EB%A9%B4.png)
 
 - upload.html, upload.css
 
@@ -144,9 +144,9 @@ frame 단위로 객체의 위치를 찾는 yolov5를 활용하여 위와 같은 
 
 **분석중 화면**
 
-![image-20210819025915051](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20210819025915051.png)
+![image-20210819025915051](https://github.com/2021-oasis-hackathon/WeRide/blob/main/images/%EB%B6%84%EC%84%9D%EC%A4%91%ED%99%94%EB%A9%B4.png)
 
-![image-20210819030005016](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20210819030005016.png)
+![image-20210819030005016](https://github.com/2021-oasis-hackathon/WeRide/blob/main/images/%EB%B6%84%EC%84%9D%EC%A4%91%ED%99%94%EB%A9%B42.png)
 
 - loading.html, loading.css
 
@@ -156,7 +156,7 @@ frame 단위로 객체의 위치를 찾는 yolov5를 활용하여 위와 같은 
 
 ##### 분석완료 화면
 
-![image-20210819030122823](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20210819030122823.png)
+![image-20210819030122823](https://github.com/2021-oasis-hackathon/WeRide/blob/main/images/%EB%B6%84%EC%84%9D%EC%99%84%EB%A3%8C%ED%99%94%EB%A9%B4.png)
 
 - success.html, success.css
 
@@ -166,7 +166,7 @@ frame 단위로 객체의 위치를 찾는 yolov5를 활용하여 위와 같은 
 
 **SCORE점수 화면**
 
-![image-20210819030138455](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20210819030138455.png)
+![image-20210819030138455](https://github.com/2021-oasis-hackathon/WeRide/blob/main/images/SCORE%ED%99%94%EB%A9%B4.png)
 
 - score.html, score.css
 
@@ -180,7 +180,7 @@ frame 단위로 객체의 위치를 찾는 yolov5를 활용하여 위와 같은 
 
 
 
-![image-20210819030405191](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20210819030405191.png)
+![image-20210819030405191](https://github.com/2021-oasis-hackathon/WeRide/blob/main/images/%EB%B6%84%EC%84%9D%EA%B2%B0%EA%B3%BC%20%ED%99%94%EB%A9%B4.png)
 
 - analysis.html, analysis.css
 
