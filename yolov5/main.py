@@ -452,5 +452,11 @@ if __name__ == '__main__':
             score_result, fps = detect(opt=opt)
     
     score_table, total_score = result_info(score_result,fps)
-
     system("python detect_lane.py")
+
+    f=open("../table_score.txt",'w')
+    f2=open("../total_score.txt",'w')
+    f.write(score_table)
+    f.close()
+    f2.write(total_score)
+    f2.close()
