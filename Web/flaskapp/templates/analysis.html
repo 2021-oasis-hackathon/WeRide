@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/default.css">
+    <link rel="stylesheet" href="static/css/analysis.css">
+    <title>DRIVER</title>
+</head>
+<body>
+    <div class="container">
+        <nav class="global-nav">
+        <div class="global-nav-links">
+            <a href="/" class="name">DRIVER</a>
+            <a href="/" class="global-nav-item">HOME</a>
+            <a href="/servicepage" class="global-nav-item">SERVICE</a>
+            <a href="/upload" class="global-nav-item">UPLOADING</a>
+            <a href="/analysis" style="text-decoration:underline;
+            text-underline-position:under; color:rgb(80,0,99);
+            text-decoration-thickness:2px" class="global-nav-item">MY PAGE</a>
+            <a href="/login" class="LOGIN">SING IN / LOGIN</a>
+        </div>
+        </nav>
+    
+    <div class="backgroundbox"></div>
+    
+
+    <div class="scorebox">
+            <h3>분석 결과 조회</h3>
+        <div class = "flex">
+            <div class = "videobox">
+                <video id = "sample" src = "{{ url_for('static', filename='2.mp4') }}" controls autoplay></video>
+                <div id = "bad">BAD HABIT</div>
+            </div>
+
+            <div class = "score">
+                <div id = title> 감점 항목 </div>
+                <div class = result1>
+                    {% for i in table%} 
+                        {{i}}<br>
+                    {% endfor %} 
+
+                
+
+
+                    
+                    
+                    
+                </div>
+
+
+                <div class = result2>
+                    <div id = result3> {{total}} </div>
+                    <div id = result4> /100점</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script scr = "static/js/score.js"></script>
+
+</body>
+

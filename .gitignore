@@ -1,3 +1,4 @@
+  
 ### object detection testing files ###
 *.pdf
 *.mp4
@@ -6,6 +7,9 @@ testing_video_Set
 yolov5/data/
 yolov5/runs/
 yolov5/detect_distance.py
+yolov5/models/__pycache__/
+yolov5/utils/__pycache__/
+yolov5/__pycache__/
 ### weight file ###
 yolov5/*.pt
 

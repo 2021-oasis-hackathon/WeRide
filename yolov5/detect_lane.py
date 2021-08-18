@@ -56,14 +56,14 @@ def road_lines(image):
     
     return result
 if __name__ == '__main__':
-    model = load_model('full_CNN_model.h5')
+    model = load_model('C:/Users/user/Desktop/오아시스/WeRide/yolov5/full_CNN_model.h5')
     lanes = Lanes()
 
     # Where to save the output video
-    vid_output = '../output2/5.mp4'
+    vid_output = '../web/flaskapp/static/2.mp4'
 
     # Location of the input video
-    clip1 = VideoFileClip("../output/exp5/5.mp4")
+    clip1 = VideoFileClip("../output/exp/2.mp4")
 
     vid_clip = clip1.fl_image(road_lines)
     vid_clip.write_videofile(vid_output, audio=False)
