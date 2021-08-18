@@ -90,7 +90,7 @@ a{
 }
 
 .scroll-section {
-    padding-top: 20vh;
+    padding-top: 15vh;
 }
 
 #scroll-section-0 h1 {
@@ -127,6 +127,7 @@ a{
     text-align: center;
     font-family: 'Pretendard-Bold';
     left: 30%;
+    margin-top:30px;
     padding-top:20px;
     padding-bottom : 10px;
     color: rgb(204, 204, 204);

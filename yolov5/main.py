@@ -454,3 +454,11 @@ if __name__ == '__main__':
     score_table, total_score = result_info(score_result,fps)
 
     system("python C:/Users/user/Desktop/오아시스/WeRide/yolov5/detect_lane.py")
+    
+    f=open("C:/Users/user/Desktop/오아시스/WeRide/table_score.txt",'w')
+    f2=open("C:/Users/user/Desktop/오아시스/WeRide/total_score.txt",'w')
+    f.write(score_table)
+    f.close()
+    f2.write(str(total_score))
+    f2.close()
+

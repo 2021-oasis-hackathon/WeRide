@@ -1,0 +1,194 @@
+@charset 'utf=8';
+
+@font-face {
+    font-family: 'Pretendard-Bold';
+    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
+    font-weight: 400,500,600,700,900;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Pretendard-Black';
+    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Black.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+        font-family: 'Pretendard-ExtraBold';
+        src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-ExtraBold.woff') format('woff');
+        font-weight: 800;
+        font-style: normal;
+    }
+
+@font-face {
+        font-family: 'Pretendard-SemiBold';
+        src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-SemiBold.woff') format('woff');
+        font-weight: 600;
+        font-style: normal;
+    }
+
+
+html :not(.name,h1,.footer,.middlebox,.backgroundbox){
+    font-family : 'Pretendard-Regular';
+    font-size : 14px;
+}
+
+/*body의 가로 스크롤 없애주고, 자간 줄임*/
+body {
+    /* background-image: url('backgb.png'); */
+    background-size: 100%;
+   overflow-x: hidden;
+   color: rgb(29,29,31);
+   letter-spacing: -0.05em;
+
+}
+p :not(.sub-message){
+    line-height: 1.6;
+}
+a{
+    color :rgb(29,29,31);
+    text-decoration: none;
+}
+
+.global-nav {
+    height: 52px;
+    padding: 0 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+/*flex로 가로 정렬, center로 가운데 정렬*/
+.global-nav-links {
+    display: flex;
+    align-items: center;
+    /* justify-content: space-between; */
+    max-width: 1500px;
+    height: 100%;
+    
+}
+
+.global-nav-item {
+    font-weight: bold;
+}
+/* 우선순위에 밀릴 경우에는 global-nav-links.name으로 바꿔라 */
+.name {
+    font-family: 'Pretendard-ExtraBold';
+    margin-right: 150px;
+    margin-left: 20px;
+    font-size: 1.5rem;
+    font-family: Pretendard-Black;
+}
+
+.global-nav-links a:not(.name,.LOGIN){
+    margin-left : 2em;
+    margin-right: 2em
+}
+
+
+.LOGIN {
+    font-size:0.8rem;
+    margin-left: 600px;
+    font-weight: bold;
+}
+
+.scroll-section {
+    padding-top: 20vh;
+}
+
+
+.container1 {
+    box-shadow: 0.1px 0.1px 5px rgb(126, 126, 126);
+    position:absolute; top: 40px; left:0; z-index:10;
+    margin-top: 55px;
+    margin-left:27%;
+    width: 800px;
+    height: 600px;
+    padding : 15px;
+    background-color: white;
+    border-radius: 15px;
+    border:solid 1px #cfcfcf;
+}
+
+#middlebox {
+    
+    margin: auto;
+    margin-top: 100px;
+    width : 700px;
+    height: 350px;
+    background-color: white;
+    border-radius: 5px;
+    border:dashed 5px #cdaaff; 
+}
+
+
+
+.backgroundbox {
+    position:relative;
+    width: 2000px;
+    height: 300px;
+    margin: 0px 3px 457px 0;
+    background-color: #a208fc;}
+
+
+  h2 {
+    color: rgb(0, 0, 0);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+  }
+  
+  .loading {
+      text-align: center;
+      margin-top: 150px;
+  }
+
+  .loading h2 {
+      text-align: center;
+  }
+
+  .loading span {
+    display: inline-block;
+    vertical-align: middle;
+    width: .6em;
+    height: .6em;
+    margin: .19em;
+    background: #007DB6;
+    border-radius: .6em;
+    animation: loading 1s infinite alternate;
+  }
+  
+  .loading span:nth-of-type(2) {
+    background: #008FB2;
+    animation-delay: 0.2s;
+  }
+  .loading span:nth-of-type(3) {
+    background: #009B9E;
+    animation-delay: 0.4s;
+  }
+  .loading span:nth-of-type(4) {
+    background: #00A77D;
+    animation-delay: 0.6s;
+  }
+  .loading span:nth-of-type(5) {
+    background: #00B247;
+    animation-delay: 0.8s;
+  }
+  .loading span:nth-of-type(6) {
+    background: #5AB027;
+    animation-delay: 1.0s;
+  }
+  .loading span:nth-of-type(7) {
+    background: #A0B61E;
+    animation-delay: 1.2s;
+  }
+  
+  @keyframes loading {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+
+
