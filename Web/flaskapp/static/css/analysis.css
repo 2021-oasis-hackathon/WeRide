@@ -64,11 +64,11 @@ html :not(.name,.scroll-section,.footer,.scorebox,h3,p,#action,#bad,#title,.resu
 
 /*body의 가로 스크롤 없애주고, 자간 줄임*/
 body {
-background-image: url('backgb.png');
-   overflow-x: hidden;
-   color: rgb(29,29,31);
-   letter-spacing: -0.05em;
-   background:rgb(248,248,248);
+    background-image: url('backgb.png');
+    overflow-x: hidden;
+    color: rgb(29,29,31);
+    letter-spacing: -0.05em;
+    background:rgb(248,248,248);
 }
 p :not(.sub-message){
     line-height: 1.6;
@@ -152,11 +152,11 @@ a{
 }
 
 .backgroundbox {
-  position:relative;
-  width: 2000px;
-  height: 300px;
-  margin: 0px 3px 457px 0;
-  background-color: #a208fc;
+    position:relative;
+    width: 2000px;
+    height: 300px;
+    margin: 0px 3px 457px 0;
+    background-color: #a208fc;
 }
 
 .flex{
@@ -180,7 +180,7 @@ a{
     margin-left: 10px;
     box-shadow: 3px 3px 3px #b3b3b3;
     border:dotted 1px #cfcfcf;
- 
+
 }
 
 #sample {
@@ -230,7 +230,7 @@ a{
 }
 
 #result3 {
-    padding-top: 35px;
+    padding-top: 10px;
     padding-left: 28%;
     font-size: 50px;
     text-align: center;
@@ -240,7 +240,7 @@ a{
 
 
 #result4 {
-    padding-top: 40px;
+    padding-top: 30px;
     font-size: 30px;
     text-align: center;
     font-family: 'GongGothicLight';

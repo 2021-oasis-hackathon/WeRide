@@ -136,7 +136,8 @@ def caculate_drive(xyxy, im0, label, c, perspective_data,
                   vehicle_frame_history,
                   vehicle_speed_history, 
                   traffic_light_frame_history,
-                  pedestrian_frame_history): #bbox/img/label/class/matrix/frame_history for 상대속도 
+                  pedestrian_frame_history,
+                  pedestrian_speed_history): #bbox/img/label/class/matrix/frame_history for 상대속도 
     ####### 변환 매트릭스 수정 부분
     transform_matrix = perspective_data["perspective_transform"]
     transfrom_matrix_reverse = transform_matrix[::-1] ##신호등 거리 계산을 위해 변환행렬을 위아래 대칭으로 바꿈
@@ -146,7 +147,7 @@ def caculate_drive(xyxy, im0, label, c, perspective_data,
     warped_size_light = (364, 640)
     distance=0
     relative_speed=0
-    score_case=[] #case 0=Null/1=차량거리 유지/2=차량 급감속/3=신호위반/4=보행자 발견시 서행/5=차선이탈/6=정지선 지킴
+    score_case=0 #case 0=Null/1=차량거리 유지/2=차량 급감속/3=신호위반/4=보행자 발견시 서행/5=차선이탈/6=정지선 지킴
 
     mid_point=int(im0.shape[1]/2)
     bbox = np.array((int(xyxy[0]),int(xyxy[1]),int(xyxy[2]),int(xyxy[3])))
@@ -166,10 +167,10 @@ def caculate_drive(xyxy, im0, label, c, perspective_data,
             if distance < 1.5 : #거리가 가까우면 충돌 위험 피드백
                 user_feedback(feedback_xyxy, im0, label='Too close!', color=(0,0,200), line_thickness=5)
                 if not (vehicle_frame_history < 1.5) :  #이전 프레임에서 충돌 위험이 없었을 때만 score_case에 추가(중복 방지) 
-                    score_case.append(1)
-            if relative_speed < -5:
-                if not (vehicle_speed_history < -5):     #이전 프레임에서 급감속이 없었을 때만 score_case에 추가(중복 방지)
-                    score_case.append(2)
+                    score_case=1
+            if relative_speed < -10:
+                if not (vehicle_speed_history < -10):     #이전 프레임에서 급감속이 없었을 때만 score_case에 추가(중복 방지)
+                    score_case=2
             vehicle_frame_history=distance
             vehicle_speed_history=relative_speed
         else:
@@ -193,7 +194,16 @@ def caculate_drive(xyxy, im0, label, c, perspective_data,
         if bbox[0] <= int(im0.shape[1]*2/3) and int(im0.shape[1]/3) <= bbox[2]:
             car3 = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter, object= 2) 
             relative_speed=car3.draw_speed(im0, color=(0, 0, 255), thickness=2, frame_history=pedestrian_frame_history)
-            pedestrian_frame_history=car3.draw(im0, color=(0, 0, 255), thickness=2)
+            distance=car3.draw(im0, color=(0, 0, 255), thickness=2)
+            if distance < 1 : #거리가 가까우면 충돌 위험 피드백
+                user_feedback(feedback_xyxy, im0, label='Too close!', color=(0,0,200), line_thickness=5)
+                if not (pedestrian_frame_history < 1): #이전 프레임에서 충돌 위험이 없었을 때만 score_case에 추가(중복 방지) 
+                    score_case=4
+            if relative_speed < -10:
+                if not (pedestrian_speed_history < -10): #이전 프레임에서 급감속이 없었을 때만 score_case에 추가(중복 방지)
+                    score_case=4
+            pedestrian_frame_history=distance
+            pedestrian_speed_history=relative_speed
         
     elif label == 'RoadMark_StopLine' or label == 'RoadMark_Crosswalk': # 거리 추가/ 빨간불일때,상대속도로 급정차 유무 판단 및 정지선 지킴 유무 판단 
         plot_one_box(xyxy, im0, label=label, color=(0,0,150), line_thickness=opt.line_thickness)
@@ -204,7 +214,7 @@ def caculate_drive(xyxy, im0, label, c, perspective_data,
     else: #traffic sign 피드백, RoadMark 피드백 / 현재 사용 x
         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
 
-    return vehicle_frame_history,vehicle_speed_history, traffic_light_frame_history, pedestrian_frame_history, score_case
+    return vehicle_frame_history,vehicle_speed_history, traffic_light_frame_history, pedestrian_frame_history, pedestrian_speed_history, score_case
 
 def detect(opt):
     score_result=[]
@@ -217,6 +227,7 @@ def detect(opt):
     vehicle_speed_history=0
     traffic_light_frame_history=0
     pedestrian_frame_history=0
+    pedestrian_speed_history=0
     ###################
 
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
@@ -314,13 +325,14 @@ def detect(opt):
                         c = int(cls)  # integer class
                         label = None if opt.hide_labels else (names[c] if opt.hide_conf else f'{names[c]} {conf:.2f}')
                         # plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
-                        vehicle_frame_history,vehicle_speed_history, traffic_light_frame_history,pedestrian_frame_history, result[2] = caculate_drive(
+                        vehicle_frame_history,vehicle_speed_history, traffic_light_frame_history,pedestrian_frame_history, pedestrian_speed_history, result[2] = caculate_drive(
                                                                                                                                         xyxy,im0,label,c,perspective_data,
                                                                                                                                         vehicle_frame_history,
                                                                                                                                         vehicle_speed_history, 
                                                                                                                                         traffic_light_frame_history,
-                                                                                                                                        pedestrian_frame_history)
-                        if len(result[2])!=0:
+                                                                                                                                        pedestrian_frame_history,
+                                                                                                                                        pedestrian_speed_history)
+                        if  result[2]!=0:
                             score_result.append(result)
                             print("score_result :",score_result)
                             print("result :",result)
@@ -374,42 +386,55 @@ def result_info(score_result, fps): #case 0=Null/1=차량거리 유지/2=차량 
         print("총점:",score)
         return s,score
     total_time=score_result[0][1]/fps
-    
+    cases=0
 
-    for time, times, cases in score_result:
-        for case in cases:
-            if case == 0:
-                print(f'00:{time/fps:.0f}/00:{total_time:.0f}: Null')
-                s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: Null'
-                score-=1
-            elif case == 1:
-                print(f'00:{time/fps:.0f}/00:{total_time:.0f}: 차간 거리 유지 감점')
-                s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: 차간 거리 유지 감점'
-                score-=1
-            elif case == 2:
-                print(f'00:{time/fps:.0f}/00:{total_time:.0f}: 급감속 감점')
-                s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: 급감속 감점'
-                score-=1
-            elif case == 3:
-                print(f'00:{time/fps:.0f}/00:{total_time:.0f}: 신호위반 감점')
-                s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: 신호위반 감점'
-                score-=1
-            elif case == 4:
-                print(f'00:{time/fps:.0f}/00:{total_time:.0f}: 보행자 발견시 서행 감점')
-                s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: 보행자 발견시 서행 감점'
-                score-=1
-            elif case == 5:
-                print(f'00:{time/fps:.0f}/00:{total_time:.0f}: 차선 이탈 감점')
-                s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: 차선 이탈 감점'
-                score-=1
-            elif case == 6:
-                print(f'00:{time/fps:.0f}/00:{total_time:.0f}: 정지선 지킴 감점')
-                s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: 정지선 지킴 감점'
-                score-=1
-            else:
-                print(f'00:{time/fps:.0f}/00:{total_time:.0f}: Null')
-                s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: Null'
-                score-=1
+    for time, times, case in score_result:
+        total_time=times/fps
+        if case==cases:     #중복방지
+            cases=case
+            continue
+
+        if case == 0:
+            print(f'00:{time/fps:.0f}/00:{total_time:.0f}: Null')
+            s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: Null'
+            score-=1
+            cases=case
+        elif case == 1:
+            print(f'00:{time/fps:.0f}/00:{total_time:.0f}: 차간 거리 유지 감점')
+            s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: 차간 거리 유지 감점'
+            score-=1
+            cases=case
+        elif case == 2:
+            print(f'00:{time/fps:.0f}/00:{total_time:.0f}: 급감속 감점')
+            s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: 급감속 감점'
+            score-=1
+            cases=case
+        elif case == 3:
+            print(f'00:{time/fps:.0f}/00:{total_time:.0f}: 신호위반 감점')
+            s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: 신호위반 감점'
+            score-=1
+            cases=case
+        elif case == 4:
+            print(f'00:{time/fps:.0f}/00:{total_time:.0f}: 보행자 발견시 미서행 감점')
+            s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: 보행자 발견시 미서행 감점'
+            score-=1
+            cases=case
+        elif case == 5:
+            print(f'00:{time/fps:.0f}/00:{total_time:.0f}: 차선 이탈 감점')
+            s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: 차선 이탈 감점'
+            score-=1
+            cases=case
+        elif case == 6:
+            print(f'00:{time/fps:.0f}/00:{total_time:.0f}: 정지선 지킴 감점')
+            s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: 정지선 지킴 감점'
+            score-=1
+            cases=case
+        else:
+            print(f'00:{time/fps:.0f}/00:{total_time:.0f}: Null')
+            s+=f'\n00:{time/fps:.0f}/00:{total_time:.0f}: Null'
+            score-=1
+            cases=case
+            
 
     print("총점:",score)
 
@@ -453,12 +478,14 @@ if __name__ == '__main__':
     
     score_table, total_score = result_info(score_result,fps)
 
+
     system("python C:/Users/user/Desktop/오아시스/WeRide/yolov5/detect_lane.py")
-    
+
+    total_score=str(total_score)
     f=open("C:/Users/user/Desktop/오아시스/WeRide/table_score.txt",'w')
     f2=open("C:/Users/user/Desktop/오아시스/WeRide/total_score.txt",'w')
     f.write(score_table)
     f.close()
-    f2.write(str(total_score))
+    f2.write(total_score)
     f2.close()
 

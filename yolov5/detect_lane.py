@@ -60,7 +60,7 @@ if __name__ == '__main__':
     lanes = Lanes()
 
     # Where to save the output video
-    vid_output = '../output2/2.mp4'
+    vid_output = '../web/flaskapp/static/2.mp4'
 
     # Location of the input video
     clip1 = VideoFileClip("../output/exp/2.mp4")

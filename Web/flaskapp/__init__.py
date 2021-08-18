@@ -13,8 +13,16 @@ app=Flask(__name__)
 app.debug = True
 #app.jinja_env.trim_blocks = True
 
+@app.route("/success")
+def success():
+    cmd=("python ../yolov5/main.py --source ../test_video/2.mp4")
+    os.system(cmd)
+    return render_template('success.html')
+
+
 @app.route("/loading")
 def loading():
+    
     return render_template('loading.html')
 
 @app.route('/analysis')
@@ -25,7 +33,7 @@ def analysis():
     table_score=f2.readlines()
     f.close()
     f2.close()
-    return render_template('analysis.html', total=total_score, table=table_score )
+    return render_template('analysis.html', total=total_score, table=table_score)
 
 @app.route('/score')
 def score():
@@ -50,12 +58,10 @@ def upload_file():
         f=request.files['file'] 
         filename=f.filename
         #dirname=f.filename[:4]
-        f.save('../test_video/'+secure_filename(f.filename)) #저장할 경로 + 파일명
+        f.save('../test_video/'+secure_filename(filename)) #저장할 경로 + 파일명
         
-        cmd=("python ../yolov5/main.py --source ../test_video/%s" %(filename))
-        os.system(cmd)
 
-        return render_template('success.html')
+        return render_template('loading.html', file=filename)
 
 @app.route('/servicepage')
 def servicepage():
