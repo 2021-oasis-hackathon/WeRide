@@ -82,15 +82,15 @@ class Car:
         if (self.has_position) and (object == 0):   #vehicle
             pos = np.array((bbox[0]/2+bbox[2]/2, bbox[3])).reshape(1, 1, -1)
             dst = cv2.perspectiveTransform(pos, self.transform_matrix).reshape(-1, 1)
-            return np.array(((self.warped_size[1]-dst[1])/self.pix_per_meter[1]+0.9)*1.3*1.3*1.3*1.3) ##초점 조절
+            return np.array(((self.warped_size[1]-dst[1])/self.pix_per_meter[1]+1.9)*1.3*1.3*1.3*1.3) ##초점 조절 1.mp4 +1.5/나머지 1.9
         elif (self.has_position) and (object == 1):   #traffic_light
             pos = np.array((bbox[0]/2+bbox[2]/2, bbox[3])).reshape(1, 1, -1)
             dst = cv2.perspectiveTransform(pos, self.transform_matrix).reshape(-1, 1)
-            return np.array((self.warped_size[1]-dst[1])/(self.pix_per_meter[1]*1.3*1.3*1.3*1.3)) ## 초점 조절
+            return np.array((self.warped_size[1]-dst[1])/(self.pix_per_meter[1])*1.3*1.3*1.3*1.3) ## 초점 조절
         elif (self.has_position) and (object == 2):    #pedestrian
             pos = np.array((bbox[0]/2+bbox[2]/2, bbox[3])).reshape(1, 1, -1)
             dst = cv2.perspectiveTransform(pos, self.transform_matrix).reshape(-1, 1)
-            return np.array((self.warped_size[1]-dst[1])/(self.pix_per_meter[1]*1.3*1.3*1.3*1.3)) ## 초점 조절
+            return np.array((self.warped_size[1]-dst[1])/(self.pix_per_meter[1]+8)*0.8*0.8*0.8*0.8) ## 초점 조절 3.mp4 +8.0)*0.8*0.8*0.8*0.8/ 4.mp4 8.0)*1.0*1.0*1.0*1.0/ 5.mp4 5.0)*0.8*0.8*0.8*0.8
         else:
             return np.array([0])
 
@@ -157,7 +157,7 @@ def caculate_drive(xyxy, im0, label, c, perspective_data,
         plot_one_box(xyxy, im0, label=label, color=(0,0,255), line_thickness=opt.line_thickness)
         user_feedback(feedback_xyxy, im0, label='Watch out for obstacle!', color=(0,0,255), line_thickness=5)
 
-    elif label.split('_')[0] == 'Vehicle' : #거리 추가/ 거리 및 상대 속도에 따른 충돌 위험 피드백
+    elif label.split('_')[0] == 'Vehicle' : # 거리 및 상대 속도에 따른 충돌 위험 피드백
         plot_one_box(xyxy, im0, label=label, color=(128,128,128), line_thickness=opt.line_thickness)
         
         if bbox[0] <= mid_point and mid_point <= bbox[2]:
@@ -177,7 +177,7 @@ def caculate_drive(xyxy, im0, label, c, perspective_data,
             car = Car(bbox, True, warped_size, transform_matrix, pixels_per_meter, object= 0) #차량 거리 계산
             car.draw(im0, color=(0, 0, 255), thickness=2)
 
-    elif label.split('_')[0] == 'TrafficLight' : #거리 추가/ 거리에 따른 정차 유무 판단 후 피드백
+    elif label.split('_')[0] == 'TrafficLight' : # 거리에 따른 정차 유무 판단 후 피드백
         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
         # if label == 'TrafficLight_Red':
         if bbox[0] <= mid_point and mid_point <= bbox[2]:
@@ -188,7 +188,7 @@ def caculate_drive(xyxy, im0, label, c, perspective_data,
             car2 = Car(bbox, True, warped_size_light, transfrom_matrix_reverse, pixels_per_meter, object= 1)
             car2.draw(im0, color=(0, 0, 255), thickness=2)
         
-    elif label.split('_')[0] == 'Pedestrian' : #거리 추가/ 거리에 따른 피드백
+    elif label.split('_')[0] == 'Pedestrian' : # 거리에 따른 피드백
         plot_one_box(xyxy, im0, label=label, color=(0,0,200), line_thickness=opt.line_thickness)
 
         if bbox[0] <= int(im0.shape[1]*2/3) and int(im0.shape[1]/3) <= bbox[2]:
@@ -205,7 +205,7 @@ def caculate_drive(xyxy, im0, label, c, perspective_data,
             pedestrian_frame_history=distance
             pedestrian_speed_history=relative_speed
         
-    elif label == 'RoadMark_StopLine' or label == 'RoadMark_Crosswalk': # 거리 추가/ 빨간불일때,상대속도로 급정차 유무 판단 및 정지선 지킴 유무 판단 
+    elif label == 'RoadMark_StopLine' or label == 'RoadMark_Crosswalk': # 거리 추가/ 빨간불일때,상대속도로 급정차 유무 판단 및 정지선 지킴 유무 판단
         plot_one_box(xyxy, im0, label=label, color=(0,0,150), line_thickness=opt.line_thickness)
 
     ####
@@ -320,7 +320,7 @@ def detect(opt):
                         with open(txt_path + '.txt', 'a') as f:
                             f.write(('%g ' * len(line)).rstrip() % line + '\n')
                     
-                    result=[frame,dataset.frames,0] #프레임/점수를 반환
+                    result=[frame,dataset.frames,0] #프레임별/점수를 반환
                     if save_img or opt.save_crop or view_img:  # Add bbox to image
                         c = int(cls)  # integer class
                         label = None if opt.hide_labels else (names[c] if opt.hide_conf else f'{names[c]} {conf:.2f}')
@@ -478,7 +478,6 @@ if __name__ == '__main__':
     
     score_table, total_score = result_info(score_result,fps)
 
-
     system("python C:/Users/user/Desktop/오아시스/WeRide/yolov5/detect_lane.py")
 
     total_score=str(total_score)
@@ -488,4 +487,3 @@ if __name__ == '__main__':
     f.close()
     f2.write(total_score)
     f2.close()
-
