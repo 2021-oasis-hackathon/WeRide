@@ -487,3 +487,4 @@ if __name__ == '__main__':
     f.close()
     f2.write(total_score)
     f2.close()
+
