@@ -29,6 +29,7 @@
 
 ## * Object Detection
 pytorch 기반의 객체 인식 모델인 yolov5을 사용
+학습한 가중치: https://drive.google.com/file/d/1yezT4xHoP3Vu55XlrZVkVfcHYcSt3-aJ/view?usp=sharing
 
 **1.Dataset(데이터셋)**
 약 17만여 장의 이미지 셋(xml)을 전처리 과정을 통해 학습에 알맞게 변환
